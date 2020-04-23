@@ -15,7 +15,7 @@ class App extends Component {
       fields: null,
     }
 
-    this.formName = 'real';
+    this.formName = 'hostel';
   }
 
   async componentDidMount() {
@@ -103,7 +103,6 @@ class App extends Component {
                   onChange={(text) => setter(text.target.value)}
                   required
                   type='text'
-                  autoFocus
               />
             );
           })
@@ -125,7 +124,7 @@ class App extends Component {
               { this.state.fields ? this.renderFields() : null }
               <div className="button loginBtn" onClick={() => this.onPress( )}>Submit Form</div>
           </div>  
-      </div>
+        </div>
      </div>
     );
   }

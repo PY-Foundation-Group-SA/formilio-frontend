@@ -14,6 +14,10 @@ body {
   align-items: center;
 }
 
+.loginTextColor {
+  width: 400px;
+}
+
 .inputContainer {
   margin-top: 32px;
   align-self: center;
