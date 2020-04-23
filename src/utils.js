@@ -24,22 +24,17 @@ export const requestForm = (formName) => {
 
 export const formResponse = (formName, responseFields) => {
     return new Promise((resolve, reject) => {
-        try {
-            axios.post('https://formilio-backend.herokuapp.com/addResponse', {
+        axios.post('https://formilio-backend.herokuapp.com/addResponse', {
                 formName,
                 responseFields,
             })
             .then((resp) => {
-                console.log(resp.data.form);
-                resolve(resp.data.form);
+                console.log(resp.data);
+                resolve(resp.data);
             })
             .catch((err) => {
                 console.log(err);
                 reject();
             })
-        } catch (err) {
-            console.log(err);
-            reject();
-        }
     })
 };

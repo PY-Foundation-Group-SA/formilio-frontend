@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { TextField } from '@material-ui/core';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import './App.css';
@@ -30,6 +30,20 @@ class App extends Component {
     this.setState(newState);
   }
 
+  resetFields = () => {
+    const inputs = Object.keys(this.state);
+    
+    inputs.map((field, index) => {
+
+      if (index === 0) {
+        return null;
+      }
+      var tmp = {}
+      tmp[field] = ""
+      this.setState(tmp);
+    });
+  };
+
   onPress = async () => {
     const inputs = Object.keys(this.state);
     
@@ -42,7 +56,21 @@ class App extends Component {
       responseFields[element] = this.state[element];
     });
     console.log(responseFields);
-    await formResponse(this.formName, responseFields);
+    formResponse(this.formName, responseFields)
+      .then((resp) => {
+        if (resp.isResponseAdded) {
+          toast.success("Your Response Has Been Added Successfully!");
+          this.resetFields();
+          return;
+        }else {
+          toast.error(resp.error);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Something wrong>");
+        return;
+      });
   }
 
   renderFields = () => {
@@ -87,11 +115,11 @@ class App extends Component {
   render() {
     return (
      <div className="mainContainer">
+       <ToastContainer
+          draggable
+          position="bottom-right"
+        />
         <div className="loginTextColor">
-          <ToastContainer
-              draggable
-              position="bottom-right"
-          />
           <span className="textMedium">Sign Up</span>
           <div className="inputContainer">
               { this.state.fields ? this.renderFields() : null }
