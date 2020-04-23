@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import './App.css';
 
-import {requestForm} from './utils';
+import {requestForm, formResponse} from './utils';
 
 class App extends Component {
   constructor(props) {
@@ -14,10 +14,12 @@ class App extends Component {
     this.state = {
       fields: null,
     }
+
+    this.formName = 'real';
   }
 
   async componentDidMount() {
-    const fields = await requestForm('real');
+    const fields = await requestForm(this.formName);
     this.setState({
       fields,
     })
@@ -26,6 +28,21 @@ class App extends Component {
       newState[element.name] = ''
     })
     this.setState(newState);
+  }
+
+  onPress = async () => {
+    const inputs = Object.keys(this.state);
+    
+    var responseFields = {}
+    inputs.forEach((element) => {
+
+      if (element === 'fields') {
+        return null;
+      };
+      responseFields[element] = this.state[element];
+    });
+    console.log(responseFields);
+    await formResponse(this.formName, responseFields);
   }
 
   renderFields = () => {
@@ -68,7 +85,6 @@ class App extends Component {
   }
   
   render() {
-    const {name} = this.state;
     return (
      <div className="mainContainer">
         <div className="loginTextColor">
@@ -79,7 +95,7 @@ class App extends Component {
           <span className="textMedium">Sign Up</span>
           <div className="inputContainer">
               { this.state.fields ? this.renderFields() : null }
-              <div className="button loginBtn" onClick={() => this.onSignUpSubmit()}>Submit Form</div>
+              <div className="button loginBtn" onClick={() => this.onPress( )}>Submit Form</div>
           </div>  
       </div>
      </div>
