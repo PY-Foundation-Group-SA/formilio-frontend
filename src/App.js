@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { TextField } from '@material-ui/core';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import LoadingScreen from 'react-loading-screen';
 
 import './App.css';
 
@@ -13,9 +14,10 @@ class App extends Component {
 
     this.state = {
       fields: null,
+      isLoading: true,
     }
 
-    this.formName = 'hostel';
+    this.formName = window.location.pathname.replace('/', '');
   }
 
   async componentDidMount() {
@@ -28,16 +30,30 @@ class App extends Component {
       newState[element.name] = ''
     })
     this.setState(newState);
+    this.stopLoading();
   }
+
+  stopLoading = () => {
+    this.setState({
+      isLoading: false,
+    });
+  };
+
+  startLoading = () => {
+    this.setState({
+      isLoading: true,
+    });
+  };
 
   resetFields = () => {
     const inputs = Object.keys(this.state);
     
     inputs.map((field, index) => {
 
-      if (index === 0) {
+      if (['fields', 'isLoading'].includes(field)) {
         return null;
       }
+
       var tmp = {}
       tmp[field] = ""
       this.setState(tmp);
@@ -45,12 +61,13 @@ class App extends Component {
   };
 
   onPress = async () => {
+    this.startLoading();
     const inputs = Object.keys(this.state);
     
     var responseFields = {}
     inputs.forEach((element) => {
 
-      if (element === 'fields') {
+      if (['fields', 'isLoading'].includes(element)) {
         return null;
       };
       responseFields[element] = this.state[element];
@@ -61,14 +78,17 @@ class App extends Component {
         if (resp.isResponseAdded) {
           toast.success("Your Response Has Been Added Successfully!");
           this.resetFields();
+          this.stopLoading();
           return;
         }else {
           toast.error(resp.error);
+          this.stopLoading();
         }
       })
       .catch((err) => {
         console.log(err);
         toast.error("Something wrong>");
+        this.stopLoading();
         return;
       });
   }
@@ -81,9 +101,10 @@ class App extends Component {
         {
           inputs.map((field, index) => {
 
-            if (index === 0) {
+            if (['fields', 'isLoading'].includes(field)) {
               return null;
             }
+
             var tmp = {}
             var setter = (text) => {
               tmp[field] = text;
@@ -112,6 +133,19 @@ class App extends Component {
   }
   
   render() {
+    const {isLoading} = this.state;
+
+    if (isLoading) {
+      return (
+        <LoadingScreen
+          loading={true}
+          bgColor='#000000'
+          spinnerColor='#ffffff'
+          logoSrc={require('./loadingLogo.png')}
+        />
+      );
+    }
+
     return (
      <div className="mainContainer">
        <ToastContainer
