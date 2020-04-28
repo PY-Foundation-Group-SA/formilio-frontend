@@ -15,22 +15,30 @@ class App extends Component {
     this.state = {
       fields: null,
       isLoading: true,
+      noForm: false,
     }
 
     this.formName = window.location.pathname.replace('/', '');
   }
 
   async componentDidMount() {
-    const fields = await requestForm(this.formName);
-    this.setState({
-      fields,
-    })
-    var newState = {};
-    fields.forEach((element, index) => {
-      newState[element.name] = ''
-    })
-    this.setState(newState);
-    this.stopLoading();
+    try {
+      const fields = await requestForm(this.formName);
+      this.setState({
+        fields,
+      })
+      var newState = {};
+      fields.forEach((element, index) => {
+        newState[element.name] = ''
+      })
+      this.setState(newState);
+      this.stopLoading();
+    } catch (err) {
+      this.setState({
+        isLoading: false,
+        noForm: true,
+      });
+    }
   }
 
   stopLoading = () => {
@@ -49,8 +57,7 @@ class App extends Component {
     const inputs = Object.keys(this.state);
     
     inputs.map((field, index) => {
-
-      if (['fields', 'isLoading'].includes(field)) {
+      if (['fields', 'isLoading', 'noForm'].includes(field)) {
         return null;
       }
 
@@ -67,7 +74,7 @@ class App extends Component {
     var responseFields = {}
     inputs.forEach((element) => {
 
-      if (['fields', 'isLoading'].includes(element)) {
+      if (['fields', 'isLoading', 'noForm'].includes(element)) {
         return null;
       };
       responseFields[element] = this.state[element];
@@ -101,7 +108,7 @@ class App extends Component {
         {
           inputs.map((field, index) => {
 
-            if (['fields', 'isLoading'].includes(field)) {
+            if (['fields', 'isLoading', 'noForm'].includes(field)) {
               return null;
             }
 
@@ -133,7 +140,7 @@ class App extends Component {
   }
   
   render() {
-    const {isLoading} = this.state;
+    const {isLoading, noForm} = this.state;
 
     if (isLoading) {
       return (
@@ -142,6 +149,20 @@ class App extends Component {
           bgColor='#000000'
           spinnerColor='#ffffff'
           logoSrc={require('./loadingLogo.png')}
+        />
+      );
+    }
+
+    if (noForm) {
+      console.log('showing')
+      return (
+        // Illustration by Marina Fedoseenko
+        <LoadingScreen
+          loading={true}
+          bgColor='#000000'
+          spinnerColor='#000000'
+          logoSrc={require('./404.png')}
+          text="Nothing Found Here :("
         />
       );
     }
