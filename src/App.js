@@ -56,7 +56,7 @@ class App extends Component {
   resetFields = () => {
     const inputs = Object.keys(this.state);
     
-    inputs.map((field, index) => {
+    inputs.every((field) => {
       if (['fields', 'isLoading', 'noForm'].includes(field)) {
         return null;
       }
@@ -82,19 +82,28 @@ class App extends Component {
     console.log(responseFields);
     formResponse(this.formName, responseFields)
       .then((resp) => {
-        if (resp.isResponseAdded) {
-          toast.success("Your Response Has Been Added Successfully!");
-          this.resetFields();
-          this.stopLoading();
-          return;
-        }else {
-          toast.error(resp.error);
-          this.stopLoading();
+        console.log(resp);
+        switch (resp.statusCode) {
+          case 1: 
+            toast.success("Your Response Has Been Added Successfully!");
+            this.resetFields();
+            this.stopLoading();
+            break;
+          case 2:
+            resp.error.map((e) => toast.error(e));
+            break;
+          case 8:
+            toast.error("Form not found");
+            break;
+          default:
+            toast.error("It looks like we are having trouble processing your request. Come back later!");
         }
+        this.resetFields();
+        this.stopLoading();
       })
       .catch((err) => {
         console.log(err);
-        toast.error("Something wrong>");
+        toast.error("It looks like we are having trouble processing your request. Come back later!");
         this.stopLoading();
         return;
       });

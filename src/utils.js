@@ -29,11 +29,9 @@ export const formResponse = (formName, responseFields) => {
                 responseFields,
             })
             .then((resp) => {
-                console.log(resp.data);
                 resolve(resp.data);
             })
             .catch((err) => {
-                console.log(err);
                 reject();
             })
     })
