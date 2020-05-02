@@ -3,6 +3,7 @@ import { TextField } from '@material-ui/core';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingScreen from 'react-loading-screen';
+import {loadReCaptcha, ReCaptcha} from 'react-recaptcha-google'
 
 import './App.css';
 
@@ -16,6 +17,7 @@ class App extends Component {
       fields: null,
       isLoading: true,
       noForm: false,
+      token: null,
     }
 
     this.formName = window.location.pathname.replace('/', '');
@@ -23,6 +25,7 @@ class App extends Component {
 
   async componentDidMount() {
     try {
+      loadReCaptcha();
       const fields = await requestForm(this.formName);
       this.setState({
         fields,
@@ -57,7 +60,7 @@ class App extends Component {
     const inputs = Object.keys(this.state);
     
     inputs.every((field) => {
-      if (['fields', 'isLoading', 'noForm'].includes(field)) {
+      if (['fields', 'isLoading', 'noForm', 'token'].includes(field)) {
         return null;
       }
 
@@ -67,6 +70,13 @@ class App extends Component {
     });
   };
 
+  onLoadRecaptcha() {
+    if (this.captchaDemo) {
+        this.captchaDemo.reset();
+        this.captchaDemo.execute();
+    }
+}
+
   onPress = async () => {
     this.startLoading();
     const inputs = Object.keys(this.state);
@@ -74,7 +84,7 @@ class App extends Component {
     var responseFields = {}
     inputs.forEach((element) => {
 
-      if (['fields', 'isLoading', 'noForm'].includes(element)) {
+      if (['fields', 'isLoading', 'noForm', 'token'].includes(element)) {
         return null;
       };
       responseFields[element] = this.state[element];
@@ -117,7 +127,7 @@ class App extends Component {
         {
           inputs.map((field, index) => {
 
-            if (['fields', 'isLoading', 'noForm'].includes(field)) {
+            if (['fields', 'isLoading', 'noForm', 'token'].includes(field)) {
               return null;
             }
 
@@ -189,6 +199,14 @@ class App extends Component {
               <div className="button loginBtn" onClick={() => this.onPress( )}>Submit Form</div>
           </div>  
         </div>
+        <ReCaptcha
+            ref={(el) => {this.captchaDemo = el;}}
+            size="invisible"
+            render="explicit"
+            sitekey={process.env.REACT_APP_siteKey}
+            onloadCallback={this.onLoadRecaptcha}
+            verifyCallback={(r) => this.setState({token: r})}
+        />
      </div>
     );
   }
