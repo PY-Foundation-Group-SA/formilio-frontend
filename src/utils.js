@@ -22,11 +22,12 @@ export const requestForm = (formName) => {
     })
 }
 
-export const formResponse = (formName, responseFields) => {
+export const formResponse = (formName, responseFields, token) => {
     return new Promise((resolve, reject) => {
         axios.post('https://formilio-backend.herokuapp.com/addResponse', {
                 formName,
                 responseFields,
+                token,
             })
             .then((resp) => {
                 resolve(resp.data);

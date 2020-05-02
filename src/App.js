@@ -90,7 +90,7 @@ class App extends Component {
       responseFields[element] = this.state[element];
     });
     console.log(responseFields);
-    formResponse(this.formName, responseFields)
+    formResponse(this.formName, responseFields, this.state.token)
       .then((resp) => {
         console.log(resp);
         switch (resp.statusCode) {
