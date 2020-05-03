@@ -9,50 +9,60 @@ import './App.css';
 
 import {requestForm, formResponse} from './utils';
 
+let recaptchaInstance;
+let Token;
+
+const executeCaptcha = function () {
+  recaptchaInstance.execute();
+};
+
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      fields: null,
-      isLoading: true,
-      noForm: false,
-      token: null,
+      _fields: null,
+      _isLoading: true,
+      _noForm: false,
+      _token: null,
     }
-
+    this.notRender = ['_fields', '_isLoading', '_noForm', '_token', '_recaptcha'];
     this.formName = window.location.pathname.replace('/', '');
   }
 
   async componentDidMount() {
     try {
       loadReCaptcha();
-      const fields = await requestForm(this.formName);
+      setTimeout(() => {
+        executeCaptcha()
+      }, 5000);
+      const _fields = await requestForm(this.formName);
       this.setState({
-        fields,
+        _fields,
       })
       var newState = {};
-      fields.forEach((element, index) => {
+      _fields.forEach((element) => {
         newState[element.name] = ''
       })
       this.setState(newState);
       this.stopLoading();
     } catch (err) {
       this.setState({
-        isLoading: false,
-        noForm: true,
+        _isLoading: false,
+        _noForm: true,
       });
     }
   }
 
   stopLoading = () => {
     this.setState({
-      isLoading: false,
+      _isLoading: false,
     });
   };
 
   startLoading = () => {
     this.setState({
-      isLoading: true,
+      _isLoading: true,
     });
   };
 
@@ -60,7 +70,7 @@ class App extends Component {
     const inputs = Object.keys(this.state);
     
     inputs.every((field) => {
-      if (['fields', 'isLoading', 'noForm', 'token'].includes(field)) {
+      if (this.notRender.includes(field)) {
         return null;
       }
 
@@ -71,11 +81,14 @@ class App extends Component {
   };
 
   onLoadRecaptcha() {
-    if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
-    }
-}
+    console.log("Here reached: ", recaptchaInstance);
+  }
+
+  that = this;
+  verifyCallback(token) {
+    console.log(token);
+    Token = token;
+  }
 
   onPress = async () => {
     this.startLoading();
@@ -84,13 +97,13 @@ class App extends Component {
     var responseFields = {}
     inputs.forEach((element) => {
 
-      if (['fields', 'isLoading', 'noForm', 'token'].includes(element)) {
+      if (this.notRender.includes(element)) {
         return null;
       };
       responseFields[element] = this.state[element];
     });
     console.log(responseFields);
-    formResponse(this.formName, responseFields, this.state.token)
+    formResponse(this.formName, responseFields, Token)
       .then((resp) => {
         console.log(resp);
         switch (resp.statusCode) {
@@ -121,13 +134,12 @@ class App extends Component {
 
   renderFields = () => {
     const inputs = Object.keys(this.state);
-
     return (
       <div>
         {
           inputs.map((field, index) => {
 
-            if (['fields', 'isLoading', 'noForm', 'token'].includes(field)) {
+            if (this.notRender.includes(field)) {
               return null;
             }
 
@@ -159,9 +171,9 @@ class App extends Component {
   }
   
   render() {
-    const {isLoading, noForm} = this.state;
+    const {_isLoading, _noForm} = this.state;
 
-    if (isLoading) {
+    if (_isLoading) {
       return (
         <LoadingScreen
           loading={true}
@@ -172,7 +184,7 @@ class App extends Component {
       );
     }
 
-    if (noForm) {
+    if (_noForm) {
       console.log('showing')
       return (
         // Illustration by Marina Fedoseenko
@@ -188,6 +200,16 @@ class App extends Component {
 
     return (
      <div className="mainContainer">
+       `<ReCaptcha
+            ref={e => {
+              recaptchaInstance = e;
+            }}
+            size="invisible"
+            render="explicit"
+            sitekey={process.env.REACT_APP_siteKey}
+            onloadCallback={this.onLoadRecaptcha}
+            verifyCallback={this.verifyCallback}
+        />
        <ToastContainer
           draggable
           position="bottom-right"
@@ -195,18 +217,10 @@ class App extends Component {
         <div className="loginTextColor">
           <span className="textMedium">Sign Up</span>
           <div className="inputContainer">
-              { this.state.fields ? this.renderFields() : null }
+              { this.state._fields ? this.renderFields() : null }
               <div className="button loginBtn" onClick={() => this.onPress( )}>Submit Form</div>
           </div>  
         </div>
-        <ReCaptcha
-            ref={(el) => {this.captchaDemo = el;}}
-            size="invisible"
-            render="explicit"
-            sitekey={process.env.REACT_APP_siteKey}
-            onloadCallback={this.onLoadRecaptcha}
-            verifyCallback={(r) => this.setState({token: r})}
-        />
      </div>
     );
   }
