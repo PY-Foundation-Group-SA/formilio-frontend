@@ -68,20 +68,19 @@ class App extends Component {
 
   resetFields = () => {
     const inputs = Object.keys(this.state);
-    
-    inputs.every((field) => {
+    var tmp = {}
+    inputs.forEach((field) => {
       if (this.notRender.includes(field)) {
         return null;
       }
-
-      var tmp = {}
       tmp[field] = ""
-      this.setState(tmp);
+      return null;
     });
+    this.setState(tmp);
   };
 
   onLoadRecaptcha() {
-    console.log("Here reached: ", recaptchaInstance);
+    console.log("Here reached: Recaptcha loaded ");
   }
 
   that = this;
@@ -102,14 +101,13 @@ class App extends Component {
       };
       responseFields[element] = this.state[element];
     });
-    console.log(responseFields);
     formResponse(this.formName, responseFields, Token)
       .then((resp) => {
         console.log(resp);
         switch (resp.statusCode) {
           case 1: 
-            toast.success("Your Response Has Been Added Successfully!");
             this.resetFields();
+            toast.success("Your Response Has Been Added Successfully!");
             this.stopLoading();
             break;
           case 2:
