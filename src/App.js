@@ -85,7 +85,6 @@ class App extends Component {
 
   that = this;
   verifyCallback(token) {
-    console.log(token);
     Token = token;
   }
 
@@ -119,7 +118,8 @@ class App extends Component {
           default:
             toast.error("It looks like we are having trouble processing your request. Come back later!");
         }
-        this.resetFields();
+        recaptchaInstance.reset();
+        executeCaptcha();
         this.stopLoading();
       })
       .catch((err) => {
