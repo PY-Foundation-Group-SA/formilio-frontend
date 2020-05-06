@@ -33,9 +33,6 @@ class App extends Component {
   async componentDidMount() {
     try {
       loadReCaptcha();
-      setTimeout(() => {
-        executeCaptcha()
-      }, 5000);
       const _fields = await requestForm(this.formName);
       this.setState({
         _fields,
@@ -46,6 +43,9 @@ class App extends Component {
       })
       this.setState(newState);
       this.stopLoading();
+      setTimeout(() => {
+        executeCaptcha()
+      }, 5000);
     } catch (err) {
       this.setState({
         _isLoading: false,
@@ -213,7 +213,6 @@ class App extends Component {
           position="bottom-right"
         />
         <div className="loginTextColor">
-          <span className="textMedium">Sign Up</span>
           <div className="inputContainer">
               { this.state._fields ? this.renderFields() : null }
               <div className="button loginBtn" onClick={() => this.onPress( )}>Submit Form</div>
