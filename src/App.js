@@ -45,7 +45,7 @@ class App extends Component {
       this.stopLoading();
       setTimeout(() => {
         executeCaptcha()
-      }, 5000);
+      }, 3000);
     } catch (err) {
       this.setState({
         _isLoading: false,

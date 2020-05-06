@@ -5,8 +5,10 @@ body {
 .mainContainer {
   background-color: transparent;
   font-family: Nova Square;
-  height: 100vh;
+  min-height: 100vh;
+  height: auto;
   width: 100vw;
+  padding: 10vh auto;
   
   display: flex;
   flex-direction: column;
