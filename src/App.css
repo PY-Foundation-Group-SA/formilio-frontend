@@ -16,11 +16,32 @@ body {
   align-items: center;
 }
 
+.subContainer {
+  width: 60vw;
+  margin: 10vh auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.formHeader {
+  color: white;
+  font-size: 64px;
+}
+
+.formDescription {
+  margin-top: 40px;
+  color: white;
+  font-size: 24px;
+}
+
 .loginTextColor {
   width: 400px;
 }
 
 .inputContainer {
+  width: 300px;
   margin-top: 32px;
   align-self: center;
 
@@ -81,7 +102,38 @@ body {
 
 @media only screen and (max-width: 500px) {
 
+  .subContainer {
+    width: 100vw;
+    margin: 2vh 2vw;
+  }
+
+  .formHeader {
+    color: white;
+    font-size: 48px;
+  }
+  
+  .formDescription {
+    margin-top: 40px;
+    color: white;
+    font-size: 18px;
+  }
+
+  .inputContainer {
+    width: 280px !important;
+    margin-top: 32px;
+    align-self: center;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .MuiFormControl-fullWidth {
+      width: 90vw !important;
+  }
+
   .loginTextColor {
-    width: 90vw;
+    width: 300px;
   }
 }

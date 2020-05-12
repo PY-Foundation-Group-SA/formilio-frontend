@@ -27,13 +27,18 @@ class App extends Component {
       _token: null,
     }
     this.notRender = ['_fields', '_isLoading', '_noForm', '_token', '_recaptcha'];
-    this.formName = window.location.pathname.replace('/', '');
+    this.fid = window.location.pathname.replace('/', '');
+    this.description = '';
+    this.formName = '';
   }
 
   async componentDidMount() {
     try {
       loadReCaptcha();
-      const _fields = await requestForm(this.formName);
+      const resp = await requestForm(this.fid);
+      this.description = resp.description;
+      this.formName = resp.formName;
+      const _fields = resp.form
       this.setState({
         _fields,
       })
@@ -100,7 +105,7 @@ class App extends Component {
       };
       responseFields[element] = this.state[element];
     });
-    formResponse(this.formName, responseFields, Token)
+    formResponse(this.fid, responseFields, Token)
       .then((resp) => {
         console.log(resp);
         switch (resp.statusCode) {
@@ -212,7 +217,9 @@ class App extends Component {
           draggable
           position="bottom-right"
         />
-        <div className="loginTextColor">
+        <div className="subContainer">
+          <div className="formHeader">{this.formName}</div>
+          <div className="formDescription">{this.description}</div>
           <div className="inputContainer">
               { this.state._fields ? this.renderFields() : null }
               <div className="button loginBtn" onClick={() => this.onPress( )}>Submit Form</div>
